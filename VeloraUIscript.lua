@@ -368,23 +368,59 @@ local animationPacks = {
         jump = "rbxassetid://1083218792",
         climb = "rbxassetid://1083182000",
         fall = "rbxassetid://1083189019"
+    },
+    ["Zombie"] = {
+        idle1 = "rbxassetid://10921344533",
+        idle2 = "rbxassetid://10921345304",
+        walk = "rbxassetid://10921355261",
+        run = "rbxassetid://616163682",
+        jump = "rbxassetid://10921351278",
+        climb = "rbxassetid://10921343576",
+        fall = "rbxassetid://10921350320"
+    },
+    ["Adidas Sports"] = {
+        idle1 = "rbxassetid://1083195517",
+        idle2 = "rbxassetid://1083214717",
+        walk = "rbxassetid://1083178339",
+        run = "rbxassetid://1083216690",
+        jump = "rbxassetid://1083218792",
+        climb = "rbxassetid://1083182000",
+        fall = "rbxassetid://1083189019"
+    },
+    ["Vampire"] = {
+        idle1 = "rbxassetid://10921315373",
+        idle2 = "rbxassetid://10921316709",
+        walk = "rbxassetid://10921326949",
+        run = "rbxassetid://10921320299",
+        jump = "rbxassetid://10921322186",
+        climb = "rbxassetid://10921314188",
+        fall = "rbxassetid://10921321317"
+    },
+    ["Udzal"] = {
+        idle1 = "rbxassetid://3303162274",
+        idle2 = "rbxassetid://3303162549",
+        walk = "rbxassetid://3303162967",
+        run = "rbxassetid://3236836670",
+        jump = "rbxassetid://10921263860",
+        climb = "rbxassetid://10921257536",
+        fall = "rbxassetid://10921262864"
     }
 }
 
 -- Animation packs
 local CustomAnimations = {
     ["Zombie FE"] = {
-        idle1 = "rbxassetid://3489171152",
-        idle2 = "rbxassetid://3489171152",
-        walk = "rbxassetid://3489174223",
-        run = "rbxassetid://3489173414",
-        jump = "rbxassetid://616161997",
-        climb = "rbxassetid://616156119",
-        fall = "rbxassetid://616157476"
+        idle1 = "rbxassetid://18537376492",
+        idle2 = "rbxassetid://18537371272",
+        walk = "rbxassetid://18537392113",
+        run = "rbxassetid://18537384940",
+        jump = "rbxassetid://18537380791",
+        climb = "rbxassetid://18537363391",
+        fall = "rbxassetid://18537367238"
     }
 }
 -- Dropdown to choose animation pack
-Window:CreateDropdown("Reanimation", "Choose Animation Pack", {"Elder", "Werewolf"}, function(selected)
+Window:CreateDropdown("Reanimation", "Choose Animation Pack", {"Elder", "Werewolf", "Zombie", "Adidas Sports", "Vampire", "Udzal"}, function(selected)
     local char = player.Character or player.CharacterAdded:Wait()
     if animationPacks[selected] then
         applyAnimations(char, animationPacks[selected])
@@ -1042,4 +1078,3 @@ Window:CreateToggle("World", "Expand Baseplate", function(state)
         end
     end
 end)
-
