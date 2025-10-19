@@ -1,8 +1,7 @@
 -- Load Velora UI Library
-local Velora = loadstring(game:HttpGet("https://pastebin.com/raw/tvtMgjsS"))()
+local Velora = loadstring(game:HttpGet("https://pastebin.com/raw/irW3ga5a"))()
 -- Create the main window
 local Window = Velora:CreateWindow("Velora")
-
 -- =========================
 -- Create Tabs
 -- =========================
@@ -291,7 +290,11 @@ Window:CreateTextLabel("Reanimation", "Reanimation")
 
 Window:CreateToggle("Reanimation", "Reanimation", function(state)
 end)
+
 Window:CreateLabel("Reanimation", "does not work yet..")
+Window:CreateDropdown("Reanimation", "Choose Option", {"Option 1", "Option 2", "Option 3"}, function(selected)
+    print("Selected option:", selected)
+end)
 Window:CreateTextLabel("Reanimation", "Animations")
 
 local Players = game:GetService("Players")
@@ -986,6 +989,95 @@ RunService.RenderStepped:Connect(function(dt)
         end
     end
 end)
+
+-- 🌟 Dynamic Player Dropdown + Teleport Button (with auto-update and save selection)
+Window:CreateTextLabel("Movement", "Players")
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+
+local selectedPlayer = nil
+
+-- Utility: safely get player names
+local function GetPlayerNames()
+	local names = {}
+	for _, plr in ipairs(Players:GetPlayers()) do
+		if plr ~= LocalPlayer then
+			table.insert(names, plr.Name)
+		end
+	end
+	table.sort(names)
+	return names
+end
+
+-- ✅ Create the player selection dropdown
+local success, playerDropdown = pcall(function()
+	return Window:CreateDropdown("Movement", "Select Player", GetPlayerNames(), function(selected)
+		selectedPlayer = selected
+	end)
+end)
+
+if not success then
+	warn("⚠️ Failed to create dropdown:", playerDropdown)
+	playerDropdown = nil
+end
+
+-- ✅ Safely add refresh logic only if dropdown exists
+if playerDropdown then
+	local function RefreshPlayerDropdown()
+		task.wait(0.1)
+		local names = GetPlayerNames()
+
+		-- Different UI systems use different refresh methods, so we check all
+		if playerDropdown.Refresh then
+			playerDropdown:Refresh(names)
+		elseif playerDropdown.UpdateOptions then
+			playerDropdown:UpdateOptions(names)
+		elseif playerDropdown.updateOptions then
+			playerDropdown:updateOptions(names)
+		else
+			-- fallback: re-create dropdown visually (safe fallback)
+			playerDropdown = Window:CreateDropdown("Movement", "Select Player", names, function(selected)
+				selectedPlayer = selected
+			end)
+		end
+	end
+
+	Players.PlayerAdded:Connect(RefreshPlayerDropdown)
+	Players.PlayerRemoving:Connect(RefreshPlayerDropdown)
+end
+
+-- ✅ Create the teleport button BELOW the dropdown
+local success2, teleportButton = pcall(function()
+	return Window:CreateButton("Movement", "Teleport to Player", function()
+		if not selectedPlayer then
+			warn("⚠️ No player selected.")
+			return
+		end
+
+		local target = Players:FindFirstChild(selectedPlayer)
+		if not target then
+			warn("⚠️ Player not found.")
+			return
+		end
+
+		local localChar = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
+		local targetChar = target.Character or target.CharacterAdded:Wait()
+
+		local hrp = localChar:FindFirstChild("HumanoidRootPart")
+		local targetHrp = targetChar:FindFirstChild("HumanoidRootPart")
+
+		if hrp and targetHrp then
+			hrp.CFrame = targetHrp.CFrame + Vector3.new(0, 3, 0)
+			print("✅ Teleported to", selectedPlayer)
+		else
+			warn("⚠️ Missing HumanoidRootPart.")
+		end
+	end)
+end)
+
+if not success2 then
+	warn("⚠️ Failed to create button:", teleportButton)
+end
 
 -- =========================
 -- Populate Teleport Page
