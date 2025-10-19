@@ -1,5 +1,5 @@
 -- Load Velora UI Library
-local Velora = loadstring(game:HttpGet("https://pastebin.com/raw/GhbRYZ1K"))()
+local Velora = loadstring(game:HttpGet("https://pastebin.com/raw/tvtMgjsS"))()
 -- Create the main window
 local Window = Velora:CreateWindow("Velora")
 
