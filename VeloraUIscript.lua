@@ -725,6 +725,40 @@ end)
 
 Window:CreateTextLabel("Movement", "Abilities")
 
+-- Anti-AFK Toggle
+local VirtualUser = game:GetService("VirtualUser")
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+
+local antiAfkEnabled = false
+local connection
+
+Window:CreateToggle("Movement", "Anti AFK", function(state)
+	antiAfkEnabled = state
+
+	if antiAfkEnabled then
+		print("✅ Anti-AFK Enabled")
+
+		-- Listen for idle event
+		connection = LocalPlayer.Idled:Connect(function()
+			if antiAfkEnabled then
+				-- Simulate right click to reset AFK timer
+				VirtualUser:Button2Down(Vector2.new(0,0), workspace.CurrentCamera.CFrame)
+				task.wait(1)
+				VirtualUser:Button2Up(Vector2.new(0,0), workspace.CurrentCamera.CFrame)
+				print("🕹️ Sent anti-AFK input")
+			end
+		end)
+	else
+		print("❌ Anti-AFK Disabled")
+		-- Disconnect listener to stop simulating input
+		if connection then
+			connection:Disconnect()
+			connection = nil
+		end
+	end
+end)
+
 -- Infinite Jump Toggle
 local infiniteJumpEnabled = false
 
