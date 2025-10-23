@@ -1023,6 +1023,99 @@ RunService.RenderStepped:Connect(function(dt)
         end
     end
 end)
+Window:CreateTextLabel("Movement", "Trip")
+--// Services
+local Players = game:GetService("Players")
+local UserInputService = game:GetService("UserInputService")
+local StarterGui = game:GetService("StarterGui")
+
+local Player = Players.LocalPlayer
+
+--// Trip Settings
+local tripEnabled = true
+local tripKey = Enum.KeyCode.T
+local tripPower = 35
+local tripTime = 2 -- time before getting up
+
+--// Notification
+pcall(function()
+    StarterGui:SetCore("SendNotification", {
+        Title = "Trip Instructions",
+        Text = "Press your set key or click the button to trip!",
+        Duration = 5
+    })
+end)
+
+--// Trip Function
+local function trip()
+    if not tripEnabled then return end
+
+    local character = Player.Character or Player.CharacterAdded:Wait()
+    local humanoid = character:FindFirstChildOfClass("Humanoid")
+    local root = character:FindFirstChild("HumanoidRootPart")
+    local animateScript = character:FindFirstChild("Animate")
+
+    if not (humanoid and root) then return end
+
+    -- Stop and disable animations
+    if animateScript then
+        animateScript.Disabled = true
+    end
+
+    for _, track in ipairs(humanoid:GetPlayingAnimationTracks()) do
+        track:Stop()
+    end
+
+    -- Force the humanoid into a ragdoll/fall state
+    humanoid:ChangeState(Enum.HumanoidStateType.Physics)
+    humanoid.PlatformStand = true -- freezes animation control
+
+    -- Apply forward velocity
+    root.Velocity = root.CFrame.LookVector * tripPower + Vector3.new(0, 20, 0)
+
+    -- Wait while down
+    task.wait(tripTime)
+
+    -- Restore control
+    humanoid.PlatformStand = false
+    humanoid:ChangeState(Enum.HumanoidStateType.GettingUp)
+
+    if animateScript then
+        animateScript.Disabled = false
+    end
+end
+
+--// Keybind Input
+UserInputService.InputBegan:Connect(function(input, gameProcessed)
+    if gameProcessed then return end
+    if input.KeyCode == tripKey and tripEnabled then
+        trip()
+    end
+end)
+
+--// UI Integration
+Window:CreateToggle("Movement", "Trip Enabled", function(state)
+    tripEnabled = state
+end)
+
+Window:CreateKeyButton("Movement", "Trip Key", "T", function(key)
+    if typeof(key) == "EnumItem" and key.EnumType == Enum.KeyCode then
+        tripKey = key
+    elseif typeof(key) == "string" then
+        local upper = string.upper(key)
+        if Enum.KeyCode[upper] then
+            tripKey = Enum.KeyCode[upper]
+        end
+    end
+end)
+
+Window:CreateButton("Movement", "Trip Now", function()
+    trip()
+end)
+
+Window:CreateSlider("Movement", "Trip Power", 10, 100, tripPower, function(value)
+    tripPower = value
+end)
 
 -- 🌟 Dynamic Player Dropdown + Teleport Button (with auto-update and save selection)
 Window:CreateTextLabel("Movement", "Players")
